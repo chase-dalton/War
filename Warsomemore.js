@@ -10,7 +10,6 @@ let makeDeck = () => {
   //let deck = [];
   for (let i in suits){
     for (let j=0;j<faces.length;j++){
-      console.log(j);
       const card = {
         suit:suits[i],
         face:faces[j],
