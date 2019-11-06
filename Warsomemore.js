@@ -9,12 +9,13 @@ let discardPile = [];
 let makeDeck = () => {
   //let deck = [];
   for (let i in suits){
-    for (j=0;j<faces.length;j++){
-      card = {
+    for (let j=0;j<faces.length;j++){
+      console.log(j);
+      const card = {
         suit:suits[i],
         face:faces[j],
         value:j+2
-      }
+      };
       deck.push(card);
     }
   }
@@ -40,14 +41,14 @@ let shuffle = (array) => {
 //create players
 
 let createPlayers = (num) => {
-  for (i=1;i<=num;i++){
+  for (let i=1;i<=num;i++){
     let hand = [];
     let player = {
       name: "Player " + i,
       id: i,
       hand:hand,
       score:0
-    }
+    };
     players.push(player);
   }
   return players;
@@ -58,7 +59,7 @@ let deal = (deck) => {
   let insertValue = [];
   let p1Hand = players[0].hand;
   let p2Hand = players[1].hand;
-  for(i=0;i<deck.length;i++){
+  for(let i=0;i<deck.length;i++){
     if (i%2 === 0){
       insertValue = deck[i];
       p1Hand.push(insertValue);
@@ -72,7 +73,7 @@ let deal = (deck) => {
 
 let turn = () => {
   let compareArray = [];
-  for(i=0;i<1;i++){
+  for(let i=0;i<1;i++){
     let p1Card = players[0].hand[i];
     let p2Card = players[1].hand[i];
     let p1Hand = players[0].hand;
@@ -97,20 +98,24 @@ let turn = () => {
 //turn 2.0
 //describe code as wordlike as possible
 
-let turn2 = () => {
-  const [player1,player2] = players;
-  const player1TopCard = player1.hand.shift();
-  const player2TopCard = player2.hand.shift();
-  if(player1TopCard.value > player2TopCard.value) {
-      console.log(`Player 1 wins with a ${player1TopCard.face} of ${player1TopCard.suit}` );
-  } else if(player1TopCard.value < player2TopCard.value) {
-    console.log(`Player 2 wins with a ${player2TopCard.face} of ${player2TopCard.suit}` )
+let turn2 = ([topCard1, ...restDeck1], [topCard2, ...restDeck2]) => {
+  if(topCard1.value > topCard2.value) {
+    return { winner: 'deck1', deck1: restDeck1, deck2: restDeck2, score:1};
+  } else if(topCard1.value < topCard2.value) {
+    return { winner: 'deck2', deck1: restDeck1, deck2: restDeck2, score:1};
   } else {
-      const player1Top3Cards = player1.hand.splice(0,3); //what if less than 3 cards left?   
-      const player2Top3Cards = player2.hand.splice(0,3);
+    if(restDeck1.length === 0){
+      return { winner: 'none', deck1: [], deck2: [], score: 0 };
     }
-  
-}
+    const sacraficialN = restDeck1.length <= 3 ? restDeck1.length - 1 : 3;
+    const { winner, deck1, deck2, score } = turn2(
+      restDeck1.slice(sacraficialN),
+      restDeck2.slice(sacraficialN)
+    );
+    if(winner === 'none'){ return { winner, deck1, deck2, score}; }
+    return { winner, deck1, deck2, score : score + sacraficialN + 1 };
+  }
+};
 
 
 makeDeck(); //deck made
